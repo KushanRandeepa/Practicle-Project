@@ -1,45 +1,450 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytical Chemistry Simulator</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="main.css  ">
+  <script src="tempjs.js"></script>
 </head>
-
 <body>
-    
-<div class="container">
-    <div class="row">
-        <div class="col-12">
-            <h1>Welcome</h1>
-            <p>This is a simple website Find Chemical Information</p>
+<div class="app-wrapper">
+
+<!-- HEADER -->
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <div class="logo-block">
+        <div class="logo-icon"><i class="fas fa-flask"></i></div>
+        <div class="logo-text">
+          <h1>Analytical Chemistry Simulator</h1>
+          <p>Virtual Laboratory Environment</p>
         </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- NAV -->
+<div class="nav-section">
+  <div class="container">
+    <div class="lab-nav">
+      <div class="lab-nav-item active" onclick="showSection('setup')" id="nav-setup">
+        <span class="step-num">1</span><i class="fas fa-home"></i>Setup
+      </div>
+    
+      <div class="lab-nav-item" onclick="showSection('prelab')" id="nav-prelab">
+        <span class="step-num">3</span><i class="fas fa-calculator"></i>Pre-Lab
+      </div>
+      <div class="lab-nav-item" onclick="showSection('simulation')" id="nav-simulation">
+        <span class="step-num">4</span><i class="fas fa-vial"></i>Simulation
+      </div>
+      <div class="lab-nav-item" onclick="showSection('analysis')" id="nav-analysis">
+        <span class="step-num">5</span><i class="fas fa-chart-line"></i>Analysis
+      </div>
+     
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="main-content">
+<div class="container">
+
+<!-- ========== SECTION 1: SETUP ========== -->
+<div class="section-panel active" id="section-setup">
+
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="lab-card">
+        <div class="card-title-lab"><i class="fas fa-vial"></i>Analyte Selection</div>
+        <div class="mb-3">
+          <label class="lab-label">Select Analyte (Sample)</label>
+          <select class="lab-select" id="analyte-select" onchange="updateMethodOptions()">
+            <option value="h2o2">Hydrogen Peroxide (H₂O₂) — 6% v/v commercial solution</option>
+            <option value="fe2">Iron(II) (Fe²⁺) — Ferrous sulfate solution</option>
+            <option value="oxalic">Oxalic Acid (H₂C₂O₄) — Analytical grade</option>
+            <option value="naoh">Sodium Hydroxide (NaOH) — Unknown concentration</option>
+            <option value="hcl">Hydrochloric Acid (HCl) — Unknown concentration</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="lab-label">Titration Method</label>
+          <select class="lab-select" id="method-select" onchange="updateExperimentInfo()">
+            <option value="kmno4_redox">KMnO₄ Redox Titration (Permanganometry)</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="lab-label">Commercial Claim to Verify</label>
+          <input type="text" class="lab-input" id="claim-input" value="6% v/v H₂O₂" readonly>
+        </div>
+        <button class="btn-lab btn-lg-lab btn-lab-green w-100 mt-2" onclick="initializeExperiment()">
+          <i class="fas fa-play-circle"></i>Initialize Experiment
+        </button>
+      </div>
     </div>
 
-<button type="button" class="btn btn-outline-primary   btn-lg">Pre-Titration Concentration Check  </button>
-<button type="button" class="btn btn-outline-success  btn-lg">Standardization Before Titration</button>
-<button type="button" class="btn btn-outline-danger  btn-lg">Danger</button>
-<button type="button" class="btn btn-outline-warning btn-lg">Warning</button>
-<button type="button" class="btn btn-outline-info btn-lg">Info</button>
+   
 
-<div  class="container  mt-5">
-
-<form class="row g-3">
-  <div class="col-auto">
-    <label for="staticEmail2" >Enter your V/V% :-</label>
+    <div class="col-12">
+      <div class="lab-card">
+        <div class="card-title-lab"><i class="fas fa-microscope"></i>Laboratory Status Dashboard</div>
+        <div class="row g-3">
+          <div class="col-6 col-md-3">
+            <div class="stat-card">
+              <div class="stat-val" id="dash-runs">0</div>
+              <div class="stat-lbl">Trial Runs</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card">
+              <div class="stat-val" id="dash-titre" style="font-size:1.1rem">—</div>
+              <div class="stat-lbl">Avg Titre (mL)</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card">
+              <div class="stat-val" id="dash-conc" style="font-size:1.1rem">—</div>
+              <div class="stat-lbl">Exp. Conc. (%)</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card">
+              <div class="stat-val" id="dash-acc" style="font-size:1.1rem">—</div>
+              <div class="stat-lbl">Accuracy</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="col-auto">
-    <label for="inputPassword2" class="visually-hidden">Password</label>
-    <input type="number" class="form-control" id="inputPassword2">
-  </div>
-  <div class="col-auto">
-    <button type="submit" class="btn btn-primary mb-3">Confirm identity</button>
-  </div>
-</form>
 </div>
+
+
+
+
+
+<!-- ========== SECTION 3: PRE-LAB ========== -->
+<div class="section-panel" id="section-prelab">
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="lab-card">
+        <div class="card-title-lab"><i class="fas fa-calculator"></i>Pre-Lab Calculator</div>
+        <div class="mb-3">
+          <label class="lab-label">Sample Volume (mL)</label>
+          <input type="number" class="lab-input" id="pl-sample-vol" value="10.0" step="0.1" min="1" max="50" oninput="calcPrelab()">
+        </div>
+        <div class="mb-3">
+          <label class="lab-label">KMnO₄ Concentration (mol/L)</label>
+          <input type="number" class="lab-input" id="pl-kmno4-conc" value="0.02" step="0.001" min="0.001" max="1" oninput="calcPrelab()">
+        </div>
+        <div class="mb-3">
+          <label class="lab-label">Dilution Factor</label>
+          <input type="number" class="lab-input" id="pl-dilution" value="10" step="1" min="1" max="1000" oninput="calcPrelab()">
+        </div>
+        <div class="mb-3">
+          <label class="lab-label">H₂O₂ Density (g/mL)</label>
+          <input type="number" class="lab-input" id="pl-density" value="1.0" step="0.01" min="0.9" max="1.5" oninput="calcPrelab()">
+        </div>
+        <div class="mb-3">
+          <label class="lab-label">Manufacturer Claim (% v/v)</label>
+          <input type="number" class="lab-input" id="pl-claim" value="6.0" step="0.1" min="0" max="100" oninput="calcPrelab()">
+        </div>
+        <button class="btn-lab btn-lab-green w-100" onclick="calcPrelab()">
+          <i class="fas fa-sync-alt"></i>Recalculate
+        </button>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="lab-card">
+        <div class="card-title-lab"><i class="fas fa-superscript"></i>Stoichiometric Results</div>
+        <div id="prelab-results">
+          <div class="data-chip mb-2"><span class="chip-label">Expected Titre Volume</span><span class="chip-value" id="pr-titre">— mL</span></div>
+          <div class="data-chip mb-2"><span class="chip-label">Moles H₂O₂ in Sample</span><span class="chip-value" id="pr-moles-h2o2">— mol</span></div>
+          <div class="data-chip mb-2"><span class="chip-label">Moles KMnO₄ Required</span><span class="chip-value" id="pr-moles-kmno4">— mol</span></div>
+          <div class="data-chip mb-2"><span class="chip-label">Mass H₂O₂ in Sample</span><span class="chip-value" id="pr-mass-h2o2">— g</span></div>
+          <div class="data-chip mb-2"><span class="chip-label">H₂O₂ Molarity (Sample)</span><span class="chip-value" id="pr-molarity">— mol/L</span></div>
+          <div class="data-chip mb-2"><span class="chip-label">Diluted Sample Molarity</span><span class="chip-value" id="pr-dil-molarity">— mol/L</span></div>
+          <div class="data-chip"><span class="chip-label">Mole Ratio (H₂O₂:KMnO₄)</span><span class="chip-value">5 : 2</span></div>
+        </div>
+        <div class="lab-divider"></div>
+        <div class="theory-block" style="border-left-color:var(--accent-purple)">
+          <h5>Calculation Method</h5>
+          <div class="chem-eq" style="font-size:0.78rem">n(KMnO₄) = C × V(titre) / 1000</div>
+          <div class="chem-eq" style="font-size:0.78rem">n(H₂O₂) = 5/2 × n(KMnO₄)</div>
+          <div class="chem-eq" style="font-size:0.78rem">% v/v = [n × M(H₂O₂) / (ρ × V_sample)] × 100</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<!-- ========== SECTION 4: SIMULATION ========== -->
+<div class="section-panel" id="section-simulation">
+  <div class="row g-3">
+    <!-- Left: Apparatus -->
+    <div class="col-md-5 col-lg-4">
+      <div class="lab-card">
+        <div class="card-title-lab"><i class="fas fa-vial"></i>Virtual Apparatus</div>
+        <div class="sim-container">
+          <!-- Burette -->
+          <div class="apparatus-wrapper" style="position:relative">
+            <svg id="burette-svg" width="80" height="240" viewBox="0 0 80 240">
+              <!-- Burette body -->
+              <rect x="28" y="5" width="24" height="180" rx="4" fill="rgba(0,229,255,0.06)" stroke="rgba(0,229,255,0.5)" stroke-width="1.5"/>
+              <!-- Graduated markings -->
+              <g stroke="rgba(0,229,255,0.3)" stroke-width="0.8">
+                <line x1="42" y1="20" x2="52" y2="20"/>
+                <line x1="42" y1="38" x2="52" y2="38"/>
+                <line x1="42" y1="56" x2="52" y2="56"/>
+                <line x1="42" y1="74" x2="52" y2="74"/>
+                <line x1="42" y1="92" x2="52" y2="92"/>
+                <line x1="42" y1="110" x2="52" y2="110"/>
+                <line x1="42" y1="128" x2="52" y2="128"/>
+                <line x1="42" y1="146" x2="52" y2="146"/>
+                <line x1="42" y1="164" x2="52" y2="164"/>
+              </g>
+              <!-- Tick labels -->
+              <g fill="rgba(0,229,255,0.5)" font-size="6" font-family="'Share Tech Mono',monospace" text-anchor="end">
+                <text x="27" y="23">0</text>
+                <text x="27" y="41">5</text>
+                <text x="27" y="59">10</text>
+                <text x="27" y="77">15</text>
+                <text x="27" y="95">20</text>
+                <text x="27" y="113">25</text>
+                <text x="27" y="131">30</text>
+                <text x="27" y="149">35</text>
+                <text x="27" y="167">40</text>
+              </g>
+              <!-- KMnO4 liquid level (filled from top) -->
+              <clipPath id="buretteClip"><rect x="29" y="6" width="22" height="178" rx="3"/></clipPath>
+              <rect id="burette-liquid" x="29" y="6" width="22" height="50" rx="3" fill="rgba(124,77,255,0.35)" clip-path="url(#buretteClip)">
+              </rect>
+              <!-- Stopcock -->
+              <rect x="34" y="186" width="12" height="14" rx="3" fill="rgba(0,229,255,0.2)" stroke="rgba(0,229,255,0.5)" stroke-width="1.2"/>
+              <!-- Nozzle -->
+              <line x1="40" y1="200" x2="40" y2="230" stroke="rgba(0,229,255,0.6)" stroke-width="2"/>
+              <circle id="drop" cx="40" cy="232" r="3" fill="rgba(124,77,255,0.8)" opacity="0"/>
+            </svg>
+
+            <!-- Flask SVG -->
+            <svg id="flask-svg" width="130" height="160" viewBox="0 0 130 160" style="margin-top:-20px">
+              <!-- Flask body -->
+              <path d="M45,20 L45,65 L10,130 Q8,145 25,145 L105,145 Q122,145 120,130 L85,65 L85,20 Z"
+                fill="rgba(0,255,157,0.06)" stroke="rgba(0,255,157,0.5)" stroke-width="1.5"/>
+              <!-- Liquid in flask -->
+              <clipPath id="flaskClip">
+                <path d="M45,20 L45,65 L10,130 Q8,145 25,145 L105,145 Q122,145 120,130 L85,65 L85,20 Z"/>
+              </clipPath>
+              <rect id="flask-liquid" x="5" y="80" width="120" height="70"
+                fill="rgba(0,255,157,0.25)" clip-path="url(#flaskClip)"/>
+              <!-- Flask neck -->
+              <rect x="43" y="5" width="44" height="18" rx="4"
+                fill="rgba(0,255,157,0.06)" stroke="rgba(0,255,157,0.4)" stroke-width="1.5"/>
+              <!-- Swirl/bubbles -->
+              <g id="flask-bubbles" opacity="0.5">
+                <circle cx="55" cy="115" r="3" fill="rgba(0,255,157,0.3)"/>
+                <circle cx="75" cy="105" r="2" fill="rgba(0,255,157,0.3)"/>
+                <circle cx="65" cy="125" r="4" fill="rgba(0,255,157,0.2)"/>
+              </g>
+            </svg>
+
+            <!-- Endpoint indicator -->
+            <div id="endpoint-msg" style="display:none" class="endpoint-flash mt-2">
+              <i class="fas fa-star me-1" style="color:var(--accent-purple)"></i>ENDPOINT REACHED — Persistent pink colour
+            </div>
+          </div>
+
+          <!-- Volume readout -->
+          <div class="data-chip w-100 text-center mt-2">
+            <span class="chip-label">Volume Added</span>
+            <span class="chip-value readout-val" id="sim-vol-added">0.00 mL</span>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="mt-3 d-flex flex-wrap gap-2">
+          <button class="btn-lab flex-fill" onclick="addTitrant(0.1)" id="btn-drop"><i class="fas fa-tint"></i>+0.1</button>
+          <button class="btn-lab flex-fill" onclick="addTitrant(0.5)" id="btn-half"><i class="fas fa-tint"></i>+0.5</button>
+          <button class="btn-lab flex-fill" onclick="addTitrant(1.0)" id="btn-one"><i class="fas fa-tint"></i>+1.0</button>
+          <button class="btn-lab btn-lab-amber flex-fill" onclick="addTitrant(5.0)" id="btn-fast"><i class="fas fa-forward"></i>+5.0</button>
+        </div>
+        <div class="d-flex gap-2 mt-2">
+          <button class="btn-lab btn-lab-green flex-fill" onclick="recordTrial()">
+            <i class="fas fa-check-circle"></i>Record Trial
+          </button>
+          <button class="btn-lab btn-lab-red" onclick="resetSim()">
+            <i class="fas fa-redo"></i>Reset
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Chart + Data -->
+    <div class="col-md-7 col-lg-8">
+      <div class="lab-card mb-3">
+        <div class="card-title-lab"><i class="fas fa-chart-line"></i>Real-Time Titration Curve</div>
+        <div class="chart-wrap">
+          <canvas id="titration-chart" height="220"></canvas>
+        </div>
+      </div>
+      <div class="lab-card">
+        <div class="card-title-lab"><i class="fas fa-table"></i>Trial Data</div>
+        <div class="row g-2 mb-3">
+          <div class="col-6 col-md-3">
+            <div class="data-chip text-center">
+              <span class="chip-label">Trial #</span>
+              <span class="chip-value" id="trial-num">1</span>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="data-chip text-center">
+              <span class="chip-label">Volume</span>
+              <span class="chip-value" id="sim-current-vol">0.00 mL</span>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="data-chip text-center">
+              <span class="chip-label">Progress</span>
+              <span class="chip-value" id="sim-progress">0%</span>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="data-chip text-center">
+              <span class="chip-label">Status</span>
+              <span class="chip-value" id="sim-status" style="color:var(--accent-green);font-size:0.8rem">Titrating</span>
+            </div>
+          </div>
+        </div>
+        <div class="progress-bar-lab mb-3">
+          <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="lab-table">
+            <thead>
+              <tr>
+                <th>Trial</th>
+                <th>Initial (mL)</th>
+                <th>Final (mL)</th>
+                <th>Titre (mL)</th>
+                <th>Include</th>
+              </tr>
+            </thead>
+            <tbody id="trial-tbody">
+              <tr><td colspan="5" style="text-align:center;color:var(--text-dim);padding:1.5rem">No trials recorded yet</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+<!-- ========== SECTION 5: ANALYSIS ========== -->
+<div class="section-panel" id="section-analysis">
+  <div class="row g-3 mb-3">
+    <div class="col-md-3 col-6">
+      <div class="stat-card">
+        <div class="stat-val" id="an-avg-titre">—</div>
+        <div class="stat-lbl">Average Titre (mL)</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="stat-card">
+        <div class="stat-val" id="an-exp-conc">—</div>
+        <div class="stat-lbl">Exp. Concentration (%)</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="stat-card">
+        <div class="stat-val" id="an-std-dev">—</div>
+        <div class="stat-lbl">Std. Deviation</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="stat-card">
+        <div class="stat-val" id="an-accuracy">—</div>
+        <div class="stat-lbl">Accuracy (%)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="lab-card">
+        <div class="card-title-lab"><i class="fas fa-flask"></i>Post-Lab Analysis</div>
+        <div id="postlab-content">
+          <p style="color:var(--text-dim);font-size:0.85rem">Complete at least 2 trials in the simulation to generate post-lab analysis.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="lab-card">
+        <div class="card-title-lab"><i class="fas fa-exclamation-circle"></i>Error Analysis</div>
+        <div id="error-content">
+          <p style="color:var(--text-dim);font-size:0.85rem">Error analysis will appear after trials are complete.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="lab-card">
+        <div class="card-title-lab"><i class="fas fa-table"></i>Complete Results Summary</div>
+        <div style="overflow-x:auto">
+          <table class="lab-table" id="analysis-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Symbol</th>
+                <th>Value</th>
+                <th>Unit</th>
+              </tr>
+            </thead>
+            <tbody id="analysis-tbody">
+              <tr><td colspan="4" style="text-align:center;color:var(--text-dim);padding:1.5rem">Run simulations first</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="mt-3 d-flex gap-2 flex-wrap">
+          <button class="btn-lab btn-lab-green" onclick="runAnalysis()">
+            <i class="fas fa-chart-bar"></i>Run Full Analysis
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+</div><!-- /container -->
+</main>
+
+<footer>
+  <div class="container">
+    <span style="color:var(--accent-cyan)">Analytical Chemistry Simulator</span> · Virtual Laboratory Platform · For Educational Use Only · © 2024
+  </div>
+</footer>
+</div>
+
+
 </body>
 </html>
-
